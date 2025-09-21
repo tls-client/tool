@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>discord 荒らしツール</title>
+<title>Discord 荒らしツール</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>荒らしツール</h1>
+<h1>Discord 荒らしツール</h1>
 
 <!-- メッセージ設定パネル -->
 <div class="panel">
   <button class="accordion-btn">メッセージ設定</button>
   <div class="panel-body">
-    <textarea id="token" class="input-area" placeholder="Token (改行で複数)"></textarea>
-    <textarea id="guildId" class="input-area" placeholder="サーバーID (改行で複数)"></textarea>
-    <select id="channelId" class="input-area"></select>
-    <button id="fetchChannelsBtn" class="btn">全チャンネル取得</button>
+    <textarea id="token" placeholder="Token（改行で複数）"></textarea>
+    <textarea id="guildId" placeholder="サーバーID（改行で複数）"></textarea>
+    <select id="channelId"></select>
+    <button id="fetchChannelsBtn">全チャンネル取得</button>
     <textarea id="messageContent" placeholder="メッセージ内容"></textarea>
-    <input type="number" id="randomMentionCount" placeholder="ランダムメンション数">
     <label><input type="checkbox" id="appendRandomStr"> 語尾にランダム文字付与</label>
+    <input type="number" id="randomMentionCount" placeholder="ランダムメンション数">
+    <button id="fetchUsersBtn">全ユーザー取得</button>
     <input type="number" id="interval" placeholder="送信間隔(ms)">
     <input type="number" id="maxCount" placeholder="送信上限(回)">
     <button id="startBtn">送信開始</button>
     <button id="stopBtn">送信停止</button>
-    </div>
   </div>
 </div>
 
@@ -33,15 +33,13 @@
 <div class="panel">
   <button class="accordion-btn">投票設定</button>
   <div class="panel-body">
-    <input id="voteTitle" class="input-area" placeholder="投票タイトル">
-    <textarea id="voteOptions" class="input-area" placeholder="回答 (改行で複数)"></textarea>
-    <input type="number" id="voteDuration" class="input-area" placeholder="開催期間(分)">
-    <label class="checkbox"><input type="checkbox" id="voteEndNow"> 即時終了</label>
-    <input type="number" id="voteInterval" class="input-area" placeholder="連続送信間隔(ms)">
-    <div class="btn-group">
-      <button id="startVoteBtn" class="btn">投票開始</button>
-      <button id="stopVoteBtn" class="btn stop">投票停止</button>
-    </div>
+    <input id="voteTitle" placeholder="投票タイトル">
+    <textarea id="voteOptions" placeholder="投票回答（改行で複数）"></textarea>
+    <input type="number" id="voteDuration" placeholder="開催期間(分)">
+    <label><input type="checkbox" id="voteEndNow"> 即時終了</label>
+    <input type="number" id="voteInterval" placeholder="連続送信間隔(ms)">
+    <button id="startVoteBtn">投票送信開始</button>
+    <button id="stopVoteBtn">投票送信停止</button>
   </div>
 </div>
 
@@ -49,18 +47,17 @@
 <div class="panel">
   <button class="accordion-btn">スレッド設定</button>
   <div class="panel-body">
-    <input id="threadName" class="input-area" placeholder="スレッド名">
-    <select id="threadChannel" class="input-area"></select>
-    <textarea id="mentionContent" class="input-area" placeholder="メンション内容"></textarea>
-    <button id="fetchUsersBtn" class="btn">全ユーザー取得</button>
-    <input type="number" id="threadInterval" class="input-area" placeholder="連続送信間隔(ms)">
-    <div class="btn-group">
-      <button id="startThreadBtn" class="btn">送信開始</button>
-      <button id="stopThreadBtn" class="btn stop">送信停止</button>
-    </div>
+    <input id="threadName" placeholder="スレッド名">
+    <select id="threadChannel"></select>
+    <textarea id="mentionContent" placeholder="メンション内容"></textarea>
+    <button id="fetchUsersBtn">全ユーザー取得</button>
+    <input type="number" id="threadInterval" placeholder="連続送信間隔(ms)">
+    <button id="startThreadBtn">送信開始</button>
+    <button id="stopThreadBtn">送信停止</button>
   </div>
 </div>
 
+<!-- ログパネル -->
 <div class="panel">
   <button class="accordion-btn">ログ</button>
   <div class="panel-body">
