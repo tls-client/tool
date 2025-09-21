@@ -18,14 +18,13 @@
     <textarea id="guildId" class="input-area" placeholder="サーバーID (改行で複数)"></textarea>
     <select id="channelId" class="input-area"></select>
     <button id="fetchChannelsBtn" class="btn">全チャンネル取得</button>
-    <textarea id="messageContent" class="input-area" placeholder="メッセージ内容"></textarea>
-    <input type="number" id="randomMentionCount" class="input-area" placeholder="ランダムメンション数">
-    <label class="checkbox"><input type="checkbox" id="appendRandomStr"> 語尾ランダム文字付与</label>
-    <input type="number" id="interval" class="input-area" placeholder="送信間隔(ms)">
-    <input type="number" id="maxCount" class="input-area" placeholder="送信上限(回)">
-    <div class="btn-group">
-      <button id="startBtn" class="btn">送信開始</button>
-      <button id="stopBtn" class="btn stop">送信停止</button>
+    <textarea id="messageContent" placeholder="メッセージ内容"></textarea>
+    <input type="number" id="randomMentionCount" placeholder="ランダムメンション数">
+    <label><input type="checkbox" id="appendRandomStr"> 語尾にランダム文字付与</label>
+    <input type="number" id="interval" placeholder="送信間隔(ms)">
+    <input type="number" id="maxCount" placeholder="送信上限(回)">
+    <button id="startBtn">送信開始</button>
+    <button id="stopBtn">送信停止</button>
     </div>
   </div>
 </div>
