@@ -1,30 +1,27 @@
 body {
-  background-color: #0a0a0a;
-  color: #00ffff;
   font-family: 'Segoe UI', sans-serif;
+  background-color: #0d0d0d;
+  color: #00ffcc;
   padding: 10px;
 }
 
 .accordion-button {
-  background-color: rgba(0,0,255,0.2);
-  color: #00ffff;
+  background-color: #0d0d0d;
+  color: #00ffcc;
+  border: 1px solid #00ffcc;
 }
 
-.accordion-body {
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+textarea, input, select {
   background-color: #111;
-  color: #00ffff;
+  color: #00ffcc;
+  border: 1px solid #00ffcc;
 }
 
-input, select, textarea, button {
-  background-color: #111;
-  color: #00ffff;
-  border: 1px solid #00ffff;
-}
-
-button {
-  cursor: pointer;
-}
-
-h1 {
-  color: #00ffff;
+textarea::placeholder, input::placeholder {
+  color: #00ff99;
 }
