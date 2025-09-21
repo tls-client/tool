@@ -1,52 +1,49 @@
-/* 基本 */
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #36393f; /* Discordダークテーマに寄せる */
+  background: #36393f;
   color: #dcddde;
   padding: 12px;
-  margin: 0;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 15px;
   font-weight: 600;
-  letter-spacing: 1px;
-  color: #ffffff;
+  font-size: 20px;
 }
 
-/* 入力系 */
 textarea, input, select, button {
   width: 100%;
-  margin-bottom: 10px;
-  background: #2f3136; /* Discord入力背景に寄せる */
+  margin-bottom: 8px;
+  background: #2f3136;
   color: #dcddde;
   border: 1px solid #202225;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 10px;
+  border-radius: 8px;
   box-sizing: border-box;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
-textarea::placeholder,
-input::placeholder {
-  color: #72767d; /* Discordのグレー文字 */
+textarea::placeholder, input::placeholder {
+  color: #72767d;
 }
 
-/* ボタン */
 button {
   cursor: pointer;
-  background: #7289da; /* Discordブルー系 */
-  color: #ffffff;
-  font-weight: bold;
+  background: #7289da;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
   transition: 0.2s;
 }
 
 button:hover {
-  opacity: 0.85;
+  background: #5b6eae;
 }
 
-/* パネル */
 .panel {
   margin-bottom: 12px;
 }
@@ -58,13 +55,12 @@ button:hover {
   margin-top: 6px;
 }
 
-/* アコーディオンボタン */
 .accordion-btn {
-  background: #202225; /* Discordパネル色 */
-  color: #ffffff;
-  font-weight: bold;
-  padding: 10px;
-  border-radius: 6px;
+  background: #202225;
+  color: #dcddde;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
   text-align: left;
   cursor: pointer;
@@ -84,44 +80,16 @@ button:hover {
 }
 
 .accordion-btn.active + .panel-body {
-  max-height: 1000px; /* 開く最大値 */
+  max-height: 600px;
 }
 
-/* ログパネル */
 #log {
-  height: 160px;
-  overflow-y: auto;
   background: #2f3136;
-  border: 1px solid #202225;
-  padding: 8px;
-  border-radius: 6px;
-  font-size: 13px;
   color: #dcddde;
-  line-height: 1.3em;
-}
-
-/* ログ内の色分け */
-#log p {
-  margin: 2px 0;
-  word-break: break-word;
-}
-
-/* スマホ縦画面調整 */
-@media (max-width: 480px) {
-  body {
-    padding: 8px;
-  }
-
-  textarea, input, select, button {
-    font-size: 13px;
-    padding: 6px;
-  }
-
-  .accordion-btn {
-    padding: 8px;
-  }
-
-  #log {
-    height: 140px;
-  }
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
 }
