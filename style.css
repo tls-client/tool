@@ -1,8 +1,10 @@
+/* 基本 */
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #36393f;
+  background: #36393f; /* Discordダークテーマに寄せる */
   color: #dcddde;
-  padding: 10px;
+  padding: 12px;
+  margin: 0;
 }
 
 h1 {
@@ -10,39 +12,41 @@ h1 {
   margin-bottom: 15px;
   font-weight: 600;
   letter-spacing: 1px;
+  color: #ffffff;
 }
 
-textarea, input, select {
+/* 入力系 */
+textarea, input, select, button {
   width: 100%;
-  margin-bottom: 8px;
-  background: #2f3136;
+  margin-bottom: 10px;
+  background: #2f3136; /* Discord入力背景に寄せる */
   color: #dcddde;
   border: 1px solid #202225;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 6px;
   box-sizing: border-box;
   font-size: 14px;
 }
 
-textarea::placeholder, input::placeholder {
-  color: #72767d;
+textarea::placeholder,
+input::placeholder {
+  color: #72767d; /* Discordのグレー文字 */
 }
 
+/* ボタン */
 button {
   cursor: pointer;
-  background: #7289da;
-  color: #fff;
+  background: #7289da; /* Discordブルー系 */
+  color: #ffffff;
   font-weight: bold;
-  padding: 8px;
-  border-radius: 4px;
-  border: none;
   transition: 0.2s;
 }
 
 button:hover {
-  background: #5b6eae;
+  opacity: 0.85;
 }
 
+/* パネル */
 .panel {
   margin-bottom: 12px;
 }
@@ -54,12 +58,13 @@ button:hover {
   margin-top: 6px;
 }
 
+/* アコーディオンボタン */
 .accordion-btn {
-  background: #2f3136;
-  color: #dcddde;
+  background: #202225; /* Discordパネル色 */
+  color: #ffffff;
   font-weight: bold;
   padding: 10px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: none;
   text-align: left;
   cursor: pointer;
@@ -79,16 +84,44 @@ button:hover {
 }
 
 .accordion-btn.active + .panel-body {
-  max-height: 500px;
+  max-height: 1000px; /* 開く最大値 */
 }
 
-label {
-  display: block;
-  margin-bottom: 8px;
+/* ログパネル */
+#log {
+  height: 160px;
+  overflow-y: auto;
+  background: #2f3136;
+  border: 1px solid #202225;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 13px;
   color: #dcddde;
+  line-height: 1.3em;
 }
 
-input[type="checkbox"] {
-  margin-right: 6px;
-  vertical-align: middle;
+/* ログ内の色分け */
+#log p {
+  margin: 2px 0;
+  word-break: break-word;
+}
+
+/* スマホ縦画面調整 */
+@media (max-width: 480px) {
+  body {
+    padding: 8px;
+  }
+
+  textarea, input, select, button {
+    font-size: 13px;
+    padding: 6px;
+  }
+
+  .accordion-btn {
+    padding: 8px;
+  }
+
+  #log {
+    height: 140px;
+  }
 }
