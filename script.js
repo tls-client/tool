@@ -1,146 +1,153 @@
-let messageInterval;
-
-// 共通：入力値取得
-const getGuildIds = () => {
-  return document.getElementById('guildId').value
-    .split(/\r?\n/)
-    .map(g => g.trim())
-    .filter(g => g.length > 0);
-};
-const getTokens = () => {
-  return document.getElementById('token').value
-    .split(/\r?\n/)
-    .map(t => t.trim())
-    .filter(t => t.length > 0);
-};
-
-// ランダム文字列生成
-function randomString(length = 10){
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for(let i=0;i<length;i++){
-    result += chars.charAt(Math.floor(Math.random()*chars.length));
-  }
-  return result;
-}
-
-// 全チャンネル取得
-document.getElementById('fetchChannelsBtn').addEventListener('click', () => {
-  const tokens = getTokens();
-  const guildIds = getGuildIds();
-  const channelSelect = document.getElementById('channelId');
-  const threadSelect = document.getElementById('threadChannel');
-  channelSelect.innerHTML = '';
-  threadSelect.innerHTML = '';
-
-  if(guildIds.length === 0){ alert("サーバーIDを入力してください"); return; }
-
-  guildIds.forEach(guildId => {
-    tokens.forEach(token => {
-      fetch(`https://discord.com/api/v9/guilds/${guildId}/channels`, {
-        headers: { 'Authorization': `Bot ${token}` }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(!Array.isArray(data)) return;
-        data.forEach(c => {
-          const option = document.createElement('option');
-          option.value = c.id;
-          option.textContent = `#${c.name}`;
-          channelSelect.appendChild(option);
-          threadSelect.appendChild(option.cloneNode(true));
+document.addEventListener('DOMContentLoaded', function() {
+    // Accordion
+    document.querySelectorAll('.accordion-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const panel = btn.nextElementSibling;
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
         });
-      }).catch(e => console.error(e));
     });
-  });
-  alert("チャンネル取得完了");
-});
 
-// 全ユーザー取得 + ランダムメンション生成
-document.getElementById('fetchUsersBtn').addEventListener('click', () => {
-  const tokens = getTokens();
-  const guildIds = getGuildIds();
-  const mentionArea = document.getElementById('mentionContent');
-  let mentions = [];
+    let messageIntervals = [];
+    let voteIntervals = [];
+    let threadIntervals = [];
 
-  guildIds.forEach(guildId => {
-    tokens.forEach(token => {
-      fetch(`https://discord.com/api/v9/guilds/${guildId}/members?limit=1000`, {
-        headers: { 'Authorization': `Bot ${token}` }
-      })
-      .then(res => res.json())
-      .then(members => {
-        if(!Array.isArray(members)) return;
-        const count = Math.floor(Math.random() * 6) + 3; // 3～8人
-        const shuffled = members.sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, count);
-        selected.forEach(m => {
-          let mention = `<@${m.user.id}>`;
-          if(document.getElementById('addRandomSuffix').checked){
-            mention += randomString(10);
-          }
-          mentions.push(mention);
+    const fetchChannelsBtn = document.getElementById('fetchChannelsBtn');
+    const channelIdSelect = document.getElementById('channelId');
+    const fetchUsersBtn = document.getElementById('fetchUsersBtn');
+    const threadChannelSelect = document.getElementById('threadChannel');
+
+    // ===== チャンネル取得 =====
+    fetchChannelsBtn.addEventListener('click', () => {
+        const tokens = document.getElementById('token').value.split('\n').filter(t=>t);
+        const guildIds = document.getElementById('guildId').value.split('\n').filter(g=>g);
+        channelIdSelect.innerHTML = '';
+        threadChannelSelect.innerHTML = '';
+        guildIds.forEach(guildId=>{
+            tokens.forEach(token=>{
+                fetch(`https://discord.com/api/v9/guilds/${guildId}/channels`, {
+                    headers:{'Authorization':`Bot ${token}`}
+                }).then(res=>res.json()).then(data=>{
+                    data.forEach(c=>{
+                        const option = document.createElement('option');
+                        option.value = c.id;
+                        option.textContent = `#${c.name}`;
+                        channelIdSelect.appendChild(option);
+                        threadChannelSelect.appendChild(option.cloneNode(true));
+                    });
+                });
+            });
         });
-        mentionArea.value = mentions.join(' ');
-      }).catch(e => console.error(e));
     });
-  });
-  alert("ランダムメンション生成完了");
-});
 
-// メッセージ送信開始
-document.getElementById('startBtn').addEventListener('click', ()=>{
-  const tokens = getTokens();
-  const channelOptions = [...document.getElementById('channelId').options];
-  const channels = channelOptions.map(opt => opt.value);
-  const message = document.getElementById('messageContent').value;
-  const interval = parseInt(document.getElementById('interval').value) || 1000;
-  const maxCount = parseInt(document.getElementById('maxCount').value) || 10;
-  let count = 0;
-  let tokenIndex = 0;
-  let channelIndex = 0;
+    // ===== ユーザー取得 =====
+    fetchUsersBtn.addEventListener('click', () => {
+        const tokens = document.getElementById('token').value.split('\n').filter(t=>t);
+        const guildIds = document.getElementById('guildId').value.split('\n').filter(g=>g);
+        guildIds.forEach(guildId=>{
+            tokens.forEach(token=>{
+                fetch(`https://discord.com/api/v9/guilds/${guildId}/members`, {
+                    headers:{'Authorization':`Bot ${token}`}
+                }).then(res=>res.json()).then(data=>{
+                    document.getElementById('mentionContent').value = data.map(m=>`<@${m.user.id}>`).join(' ');
+                });
+            });
+        });
+    });
 
-  messageInterval = setInterval(()=>{
-    if(count >= maxCount){ clearInterval(messageInterval); return; }
-    const token = tokens[tokenIndex % tokens.length];
-    const channelId = channels[channelIndex % channels.length];
-    let content = message + " " + document.getElementById('mentionContent').value;
+    // ===== メッセージ送信 =====
+    document.getElementById('startBtn').addEventListener('click', ()=>{
+        const tokens = document.getElementById('token').value.split('\n').filter(t=>t);
+        const guildIds = document.getElementById('guildId').value.split('\n').filter(g=>g);
+        const channelIds = [document.getElementById('channelId').value];
+        const msg = document.getElementById('messageContent').value;
+        const mentionCount = parseInt(document.getElementById('randomMentionCount').value) || 0;
+        const appendRandomStr = document.getElementById('appendRandomStr').checked;
+        const interval = parseInt(document.getElementById('interval').value) || 0;
+        const maxCount = parseInt(document.getElementById('maxCount').value) || 0;
 
-    fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bot ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({content})
-    }).catch(e=>console.error(e));
+        guildIds.forEach(gid=>{
+            tokens.forEach(token=>{
+                channelIds.forEach(cid=>{
+                    fetch(`https://discord.com/api/v9/guilds/${gid}/members`, {headers:{'Authorization':`Bot ${token}`}})
+                    .then(res=>res.json()).then(data=>{
+                        const users = data.map(u=>u.user.id);
+                        let count = 0;
+                        const send = ()=>{
+                            if(maxCount>0 && count>=maxCount) return;
+                            let finalMsg = msg;
+                            if(appendRandomStr) finalMsg += ' '+Math.random().toString(36).substring(2,12);
+                            if(mentionCount>0){
+                                const mentions = Array.from({length:mentionCount}, ()=>users[Math.floor(Math.random()*users.length)]);
+                                finalMsg += ' '+mentions.map(id=>`<@${id}>`).join(' ');
+                            }
+                            fetch(`https://discord.com/api/v9/channels/${cid}/messages`, {
+                                method:'POST',
+                                headers:{'Authorization':`Bot ${token}`,'Content-Type':'application/json'},
+                                body:JSON.stringify({content:finalMsg})
+                            });
+                            count++;
+                        };
+                        if(interval>0) messageIntervals.push(setInterval(send, interval));
+                        else send();
+                    });
+                });
+            });
+        });
+    });
 
-    count++;
-    tokenIndex++;
-    channelIndex++;
-  }, interval);
-});
+    document.getElementById('stopBtn').addEventListener('click', ()=>{messageIntervals.forEach(i=>clearInterval(i)); messageIntervals=[];});
 
-// メッセージ送信停止
-document.getElementById('stopBtn').addEventListener('click', ()=>{
-  clearInterval(messageInterval);
-});
+    // ===== 投票送信 =====
+    document.getElementById('startVoteBtn').addEventListener('click', ()=>{
+        const tokens = document.getElementById('token').value.split('\n').filter(t=>t);
+        const guildIds = document.getElementById('guildId').value.split('\n').filter(g=>g);
+        const cid = document.getElementById('channelId').value;
+        const title = document.getElementById('voteTitle').value;
+        const options = document.getElementById('voteOptions').value.split('\n').filter(o=>o);
+        const duration = document.getElementById('voteDuration').value;
+        const endNow = document.getElementById('voteEndNow').checked;
+        const interval = parseInt(document.getElementById('voteInterval').value) || 0;
 
-// スレッド作成
-document.getElementById('createThreadBtn').addEventListener('click', ()=>{
-  const tokens = getTokens();
-  const channelId = document.getElementById('threadChannel').value;
-  const threadName = document.getElementById('threadName').value;
-  if(!channelId || !threadName){ alert("チャンネルとスレッド名を入力"); return; }
+        guildIds.forEach(gid=>{
+            tokens.forEach(token=>{
+                const send = ()=>{
+                    fetch(`https://discord.com/api/v9/channels/${cid}/messages`, {
+                        method:'POST',
+                        headers:{'Authorization':`Bot ${token}`,'Content-Type':'application/json'},
+                        body:JSON.stringify({content:title,embeds:[{title:title,description:options.join('\n'),footer:{text:endNow?'Vote ends now':'Vote ends in '+duration+' minutes'}}]})
+                    });
+                };
+                if(interval>0) voteIntervals.push(setInterval(send, interval));
+                else send();
+            });
+        });
+    });
 
-  tokens.forEach(token=>{
-    fetch(`https://discord.com/api/v9/channels/${channelId}/threads`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bot ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name: threadName, type: 11 }) // type:11 → public thread
-    }).catch(e=>console.error(e));
-  });
+    document.getElementById('stopVoteBtn').addEventListener('click', ()=>{voteIntervals.forEach(i=>clearInterval(i)); voteIntervals=[];});
+
+    // ===== スレッド送信 =====
+    document.getElementById('startThreadBtn').addEventListener('click', ()=>{
+        const tokens = document.getElementById('token').value.split('\n').filter(t=>t);
+        const guildIds = document.getElementById('guildId').value.split('\n').filter(g=>g);
+        const cid = document.getElementById('threadChannel').value;
+        const threadName = document.getElementById('threadName').value;
+        const mention = document.getElementById('mentionContent').value;
+        const interval = parseInt(document.getElementById('threadInterval').value) || 0;
+
+        guildIds.forEach(gid=>{
+            tokens.forEach(token=>{
+                const send = ()=>{
+                    fetch(`https://discord.com/api/v9/channels/${cid}/messages`, {
+                        method:'POST',
+                        headers:{'Authorization':`Bot ${token}`,'Content-Type':'application/json'},
+                        body:JSON.stringify({content:mention,embeds:[{title:threadName,description:mention}]})
+                    });
+                };
+                if(interval>0) threadIntervals.push(setInterval(send, interval));
+                else send();
+            });
+        });
+    });
+
+    document.getElementById('stopThreadBtn').addEventListener('click', ()=>{threadIntervals.forEach(i=>clearInterval(i)); threadIntervals=[];});
 });
