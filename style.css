@@ -1,0 +1,61 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    padding: 1%;
+}
+
+h1 { font-size: 1.5em; text-align: center; }
+
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1em;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 0.5em;
+    background: #ddd;
+    border: none;
+    font-size: 1em;
+}
+
+.tab-btn.active { background: #00f; color: #fff; }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+label { display: block; margin-top: 1em; font-size: 0.9em; }
+
+textarea, input[type="text"], input[type="number"] {
+    width: 100%;
+    margin-top: 0.2em;
+    padding: 0.5em;
+    box-sizing: border-box;
+}
+
+.small-inputs {
+    display: flex;
+    gap: 1em;
+    margin-top: 0.5em;
+}
+
+.small-inputs div { flex: 1; }
+
+.btn-blue {
+    background-color: #00f;
+    color: #fff;
+    border: none;
+    padding: 0.5em;
+    margin-top: 0.5em;
+    width: 100%;
+    cursor: pointer;
+}
+
+#log {
+    width: 100%;
+    height: 150px;
+    margin-top: 1em;
+    padding: 0.5em;
+    box-sizing: border-box;
+}
