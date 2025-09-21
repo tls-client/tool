@@ -1,11 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Accordion
     document.querySelectorAll('.accordion-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const panel = btn.nextElementSibling;
-            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-        });
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active'); // 矢印回転用クラス
+        const panel = btn.nextElementSibling;
+        // max-heightアニメーションなのでdisplayは触らなくてOK
+        if(panel.style.maxHeight){
+            panel.style.maxHeight = null; // 閉じる
+        } else {
+            panel.style.maxHeight = panel.scrollHeight + "px"; // 開く
+        }
     });
+});
 
     let messageIntervals = [];
     let voteIntervals = [];
