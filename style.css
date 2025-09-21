@@ -52,7 +52,7 @@ button:hover {
 }
 
 .accordion-btn.active + .panel-body {
-  max-height: 500px; /*
+  max-height: 500px;
 }
 
 .accordion-btn {
