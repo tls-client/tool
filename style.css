@@ -41,6 +41,6 @@ button:hover {
 }
 
 .panel-body {
-  display: none;
+  display: block;
   margin-top: 5px;
 }
