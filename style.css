@@ -1,7 +1,7 @@
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #0d0d0d;
-  color: #00ffcc;
+  background: #36393f;
+  color: #dcddde;
   padding: 10px;
 }
 
@@ -12,32 +12,35 @@ h1 {
   letter-spacing: 1px;
 }
 
-textarea, input, select, button {
+textarea, input, select {
   width: 100%;
   margin-bottom: 8px;
-  background: #111;
-  color: #00ffcc;
-  border: 1px solid #00ffcc;
+  background: #2f3136;
+  color: #dcddde;
+  border: 1px solid #202225;
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 4px;
   box-sizing: border-box;
   font-size: 14px;
 }
 
 textarea::placeholder, input::placeholder {
-  color: #00ff99;
+  color: #72767d;
 }
 
 button {
   cursor: pointer;
-  background: linear-gradient(90deg, #00ffcc, #00ffaa);
-  color: #0d0d0d;
+  background: #7289da;
+  color: #fff;
   font-weight: bold;
+  padding: 8px;
+  border-radius: 4px;
+  border: none;
   transition: 0.2s;
 }
 
 button:hover {
-  opacity: 0.85;
+  background: #5b6eae;
 }
 
 .panel {
@@ -51,16 +54,12 @@ button:hover {
   margin-top: 6px;
 }
 
-.accordion-btn.active + .panel-body {
-  max-height: 500px;
-}
-
 .accordion-btn {
-  background: #00ffcc;
-  color: #0d0d0d;
+  background: #2f3136;
+  color: #dcddde;
   font-weight: bold;
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 4px;
   border: none;
   text-align: left;
   cursor: pointer;
@@ -77,4 +76,19 @@ button:hover {
 
 .accordion-btn.active::after {
   transform: rotate(-180deg);
+}
+
+.accordion-btn.active + .panel-body {
+  max-height: 500px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #dcddde;
+}
+
+input[type="checkbox"] {
+  margin-right: 6px;
+  vertical-align: middle;
 }
