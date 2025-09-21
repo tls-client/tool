@@ -45,8 +45,14 @@ button:hover {
 }
 
 .panel-body {
-  display: none; /* 初期は閉じておく */
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
   margin-top: 6px;
+}
+
+.accordion-btn.active + .panel-body {
+  max-height: 500px; /*
 }
 
 .accordion-btn {
