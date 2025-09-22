@@ -47,4 +47,45 @@ document.getElementById('startBtn').addEventListener('click', () => {
   const tokens = document.getElementById('tokenInput').value.split('\n').filter(Boolean);
   const channels = document.getElementById('channelInput').value.split('\n').filter(Boolean);
   const users = document.getElementById('userList').value.split('\n').filter(Boolean);
-  const msgContent = document.getElementById('message
+  const msgContent = document.getElementById('messageInput').value;
+  const mentionCount = parseInt(document.getElementById('mentionCount').value);
+  const useSuffix = document.getElementById('randomSuffix').checked;
+
+  if(tokens.length===0 || channels.length===0 || users.length===0 || !msgContent){
+    alert('必要な情報を入力してください');
+    return;
+  }
+
+  let count = 0;
+  sendTimer = setInterval(() => {
+    if(count >= limit){
+      clearInterval(sendTimer);
+      log('送信完了');
+      return;
+    }
+
+    // ランダムメンション生成
+    let mentions = [];
+    for(let i=0;i<mentionCount;i++){
+      mentions.push(`<@${users[Math.floor(Math.random()*users.length)]}>`);
+    }
+
+    // メッセージ作成
+    let finalMsg = msgContent + ' ' + mentions.join(' ');
+    if(useSuffix){
+      finalMsg += ' ' + randomSuffix();
+    }
+
+    // ここで実際の送信処理を呼ぶ（サンプルではログ出力）
+    log(`送信(${count+1}): ${finalMsg}`);
+
+    count++;
+  }, interval);
+});
+
+document.getElementById('stopBtn').addEventListener('click', () => {
+  if(sendTimer) {
+    clearInterval(sendTimer);
+    log('送信停止');
+  }
+});
