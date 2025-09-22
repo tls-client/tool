@@ -1,76 +1,94 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord 自動送信ツール</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord ツール</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
+<div class="container">
 
-    <!-- メッセージ設定パネル -->
-    <div class="panel">
-      <button class="accordion-btn">メッセージ設定</button>
-      <div class="panel-content">
-        <label>Token (改行で複数可)</label>
-        <textarea id="tokenInput" placeholder="Tokenを入力"></textarea>
-
-        <label>サーバーID</label>
-        <input type="text" id="guildIdInput" placeholder="サーバーIDを入力">
-
-        <label>チャンネルID (改行で複数可)</label>
-        <textarea id="channelIdInput" placeholder="チャンネルIDを入力"></textarea>
-        <button class="btn" id="autoFetchChannels">全チャンネルID自動取得</button>
-
-        <label>メッセージ内容</label>
-        <textarea id="messageInput" placeholder="メッセージを入力"></textarea>
-
-        <button class="btn" id="autoFetchUsers">全ユーザーID自動取得</button>
-        <label>取得済みユーザーID一覧</label>
-        <textarea id="userList" readonly></textarea>
-
-        <label>ランダムメンション数</label>
-        <input type="number" id="randomMentionCount" min="1" max="20">
-
-        <label><input type="checkbox" id="addRandomSuffix"> 語尾にランダム文字を追加(5〜10文字)</label>
-
-        <label>送信間隔(ms)</label>
-        <input type="number" id="intervalInput" value="1000">
-
-        <label>送信上限(回)</label>
-        <input type="number" id="limitInput" value="100">
-
-        <button class="btn" id="startBtn">送信開始</button>
-        <button class="btn" id="stopBtn">送信停止</button>
-      </div>
+  <!-- メッセージ設定パネル -->
+  <div class="panel">
+    <button class="accordion-btn">メッセージ設定</button>
+    <div class="accordion-content">
+      <input type="text" id="token" placeholder="Token（改行で複数可）">
+      <input type="text" id="serverid" placeholder="Server ID">
+      <textarea id="channelid" placeholder="Channel ID（改行で複数可）"></textarea>
+      <button id="getAllChannels">全チャンネルID自動取得</button>
+      <textarea id="messageContent" placeholder="メッセージ内容"></textarea>
+      <input type="number" id="mentionCount" placeholder="ランダムメンション数">
+      <button id="getAllUsers">全ユーザーID自動取得</button>
+      <textarea id="userList" placeholder="取得済みユーザーID一覧" readonly></textarea>
+      <input type="checkbox" id="addRandomSuffix">語尾にランダム文字追加(5~10文字)
+      <input type="number" id="interval" placeholder="送信間隔(ms)">
+      <input type="number" id="maxSend" placeholder="送信上限(回)">
+      <button id="startSend">送信開始</button>
+      <button id="stopSend">送信停止</button>
     </div>
-
-    <!-- 投票設定パネル -->
-    <div class="panel">
-      <button class="accordion-btn">投票設定</button>
-      <div class="panel-content">
-        <!-- 投票設定は既存コードのまま -->
-      </div>
-    </div>
-
-    <!-- スレッド設定パネル -->
-    <div class="panel">
-      <button class="accordion-btn">スレッド設定</button>
-      <div class="panel-content">
-        <!-- スレッド設定は既存コードのまま -->
-      </div>
-    </div>
-
-    <!-- ログ画面パネル -->
-    <div class="panel">
-      <button class="accordion-btn">詳細ログ</button>
-      <div class="panel-content">
-        <textarea id="logOutput" readonly placeholder="ここに詳細ログが表示されます"></textarea>
-      </div>
-    </div>
-
   </div>
-  <script src="script.js"></script>
-</body>
-</html>
+
+  <!-- 投票パネル -->
+<div class="panel">
+  <button class="accordion-btn">投票設定</button>
+  <div class="panel-content">
+    <label for="poll-question">質問内容:</label>
+    <input type="text" id="poll-question" placeholder="質問を入力">
+
+    <label for="poll-options">選択肢（改行で複数入力可）:</label>
+    <textarea id="poll-options" placeholder="選択肢を入力"></textarea>
+
+    <label for="poll-duration">投票期間（秒）:</label>
+    <input type="number" id="poll-duration" placeholder="例: 60">
+
+    <button class="action-btn" id="start-poll">投票開始</button>
+    <button class="action-btn" id="stop-poll">投票停止</button>
+
+    <label for="poll-interval">送信間隔(ms):</label>
+    <input type="number" id="poll-interval" placeholder="例: 1000">
+
+    <label for="poll-limit">送信回数(回):</label>
+    <input type="number" id="poll-limit" placeholder="例: 10">
+
+    <label>
+      <input type="checkbox" id="poll-random-tail">
+      語尾にランダム文字(5〜10文字)を追加
+    </label>
+  </div>
+</div>
+
+<!-- スレッドパネル -->
+<div class="panel">
+  <button class="accordion-btn">スレッド設定</button>
+  <div class="panel-content">
+    <label for="thread-name">スレッド名:</label>
+    <input type="text" id="thread-name" placeholder="スレッド名を入力">
+
+    <label for="thread-content">スレッド初期メッセージ:</label>
+    <textarea id="thread-content" placeholder="メッセージを入力"></textarea>
+
+    <label for="thread-interval">送信間隔(ms):</label>
+    <input type="number" id="thread-interval" placeholder="例: 1000">
+
+    <label for="thread-limit">送信回数(回):</label>
+    <input type="number" id="thread-limit" placeholder="例: 10">
+
+    <label>
+      <input type="checkbox" id="thread-random-tail">
+      語尾にランダム文字(5〜10文字)を追加
+    </label>
+
+    <button class="action-btn" id="start-thread">スレッド作成開始</button>
+    <button class="action-btn" id="stop-thread">スレッド作成停止</button>
+  </div>
+</div>
+
+<!-- ログパネル -->
+<div class="panel">
+  <button class="accordion-btn">ログ画面</button>
+  <div class="panel-content">
+    <textarea id="log-content" readonly placeholder="詳細ログがここに表示されます"></textarea>
+    <button class="action-btn" id="clear-log">ログクリア</button>
+  </div>
+</div>
