@@ -1,134 +1,46 @@
-/* 全体 */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #36393f;
-  color: #dcddde;
-  padding: 12px;
-  margin: 0;
+  background-color: #0d0d0d;
+  color: #00ff99;
+  font-family: monospace;
+  padding: 10px;
 }
 
-/* タイトル */
 h1 {
   text-align: center;
-  margin-bottom: 15px;
-  font-weight: 600;
-  font-size: 20px;
+  color: #00ccff;
 }
 
-/* 入力・テキストエリア・セレクト・ボタン */
-textarea, input, select, button {
+textarea, input[type="text"], input[type="number"] {
   width: 100%;
-  margin-bottom: 8px;
-  background: #2f3136;
-  color: #dcddde;
-  border: 1px solid #202225;
-  padding: 10px;
-  border-radius: 8px;
-  box-sizing: border-box;
-  font-size: 15px;
-  font-weight: 500;
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: #111;
+  color: #00ff99;
+  border: 1px solid #00ff99;
 }
 
-/* プレースホルダー */
-textarea::placeholder, input::placeholder {
-  color: #72767d;
-}
-
-/* ボタン */
 button {
-  cursor: pointer;
-  background: #7289da;
-  color: #fff;
-  font-weight: 600;
-  padding: 10px;
-  border-radius: 8px;
+  background-color: #0080ff;
+  color: white;
   border: none;
-  transition: 0.2s;
+  padding: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
 
 button:hover {
-  background: #5b6eae;
+  background-color: #005bb5;
 }
 
-/* パネル全体 */
-.panel {
-  margin-bottom: 12px;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-/* アコーディオンボタン */
-.accordion-btn {
-  background: #202225;
-  color: #dcddde;
-  font-weight: 600;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  position: relative;
-  transition: 0.2s;
-}
-
-.accordion-btn::after {
-  content: '▼';
-  position: absolute;
-  right: 12px;
-  transition: transform 0.2s;
-}
-
-.accordion-btn.active::after {
-  transform: rotate(-180deg);
-}
-
-/* パネル内部 */
-.panel-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  margin-top: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.accordion-btn.active + .panel-body {
-  max-height: 1000px; /* スマホでも余裕を持たせる */
-}
-
-/* チェックボックス行 */
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ログパネル */
-#log {
-  background: #2f3136;
-  color: #dcddde;
+.panel-content {
+  display: none;
   padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
-  max-height: 200px;
-  overflow-y: auto;
-  white-space: pre-wrap;
+  border: 1px solid #00ff99;
+  margin-bottom: 10px;
 }
 
-/* スマホ最適化 */
-@media screen and (max-width: 480px) {
-  h1 {
-    font-size: 18px;
-  }
-
-  textarea, input, select, button {
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  .accordion-btn {
-    font-size: 14px;
-    padding: 10px;
-  }
+.send-settings {
+  margin-top: 10px;
+  border-top: 1px solid #00ff99;
+  padding-top: 10px;
 }
