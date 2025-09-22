@@ -10,21 +10,27 @@
 
 <h1>Discord 荒らしツール</h1>
 
+<!-- メッセージ設定パネル -->
 <div class="panel">
   <button class="accordion-btn">メッセージ設定</button>
   <div class="panel-body">
     <textarea id="token" placeholder="Token（改行で複数）"></textarea>
     <textarea id="guildId" placeholder="サーバーID（改行で複数）"></textarea>
-    <select id="channelId"></select>
+    <select id="channelSelect"></select>
+    <textarea id="channelIdNumber" placeholder="チャンネルID（改行で複数）"></textarea>
     <button id="fetchChannelsBtn">全チャンネル自動取得</button>
+
     <textarea id="messageContent" placeholder="メッセージ内容"></textarea>
     <input type="number" id="randomMentionCount" placeholder="ランダムメンション人数">
+
     <button id="fetchAllUsersBtn">全ユーザー自動取得</button>
     <textarea id="allUsersMentions" placeholder="取得済みのユーザーID一覧"></textarea>
+
     <div class="checkbox-row">
       <input type="checkbox" id="appendRandomStr">
       <label for="appendRandomStr">語尾にランダム文字付与</label>
     </div>
+
     <input type="number" id="interval" placeholder="送信間隔(ms)">
     <input type="number" id="maxCount" placeholder="送信上限(回)">
     <button id="startBtn">送信開始</button>
