@@ -1,95 +1,111 @@
+/* 全体 */
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #36393f;
-  color: #dcddde;
-  padding: 12px;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+    background-color: #2c2f33;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+/* タイトル */
 h1 {
-  text-align: center;
-  margin-bottom: 15px;
-  font-weight: 600;
-  font-size: 20px;
+    text-align: center;
+    margin: 15px 0;
+    font-size: 1.8rem;
+    color: #7289da;
 }
 
-textarea, input, select, button {
-  width: 100%;
-  margin-bottom: 8px;
-  background: #2f3136;
-  color: #dcddde;
-  border: 1px solid #202225;
-  padding: 10px;
-  border-radius: 8px;
-  box-sizing: border-box;
-  font-size: 15px;
-  font-weight: 500;
+/* パネル */
+.panel {
+    width: 90%;
+    background-color: #36393f;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
-textarea::placeholder, input::placeholder {
-  color: #72767d;
+/* アコーディオンボタン */
+.accordion-btn {
+    width: 100%;
+    padding: 12px;
+    text-align: left;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background-color: #2f3136;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
+.accordion-btn.active, .accordion-btn:hover {
+    background-color: #40444b;
+}
+
+/* パネル内 */
+.panel-body {
+    padding: 10px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* テキストエリア & インプット */
+textarea, input, select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    background-color: #2f3136;
+    color: #ffffff;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+/* ボタン */
 button {
-  cursor: pointer;
-  background: #7289da;
-  color: #fff;
-  font-weight: 600;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  transition: 0.2s;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    background-color: #7289da;
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
 button:hover {
-  background: #5b6eae;
+    background-color: #5b6eae;
 }
 
-.panel {
-  margin-bottom: 12px;
+/* チェックボックス */
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.panel-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  margin-top: 6px;
-}
-
-.accordion-btn {
-  background: #202225;
-  color: #dcddde;
-  font-weight: 600;
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  position: relative;
-  transition: 0.2s;
-}
-
-.accordion-btn::after {
-  content: '▼';
-  position: absolute;
-  right: 12px;
-  transition: transform 0.2s;
-}
-
-.accordion-btn.active::after {
-  transform: rotate(-180deg);
-}
-
-.accordion-btn.active + .panel-body {
-  max-height: 600px;
-}
-
+/* ログ */
 #log {
-  background: #2f3136;
-  color: #dcddde;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
-  max-height: 200px;
-  overflow-y: auto;
-  white-space: pre-wrap;
+    height: 150px;
+    overflow-y: auto;
+    background-color: #202225;
+    border: 1px solid #7289da;
+    padding: 5px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+/* スマホ対応 */
+@media screen and (max-width: 480px) {
+    h1 { font-size: 1.5rem; }
+    button, input, select, textarea { font-size: 0.9rem; }
 }
