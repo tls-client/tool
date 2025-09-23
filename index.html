@@ -3,132 +3,196 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#5865f2" />
   <title>discord 荒らしツール</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Discord用多機能ツール" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>" />
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="匿名倶楽部" />
+  <meta property="og:title" content="Discord 荒らしツール" />
+  <meta property="og:description" content="多機能Discordツール" />
+  <meta property="og:url" content="" />
+  <meta property="og:image" content="" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+  </style>
 </head>
 <body>
   <div class="container">
-    <h2>discord 荒らしツール</h2>
-    
-    <!-- メッセージ設定パネル -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">メッセージ設定</div>
-        <div class="toggle-icon">▶</div>
+    <header class="header">
+      <h1>Discord 荒らしツール</h1>
+    </header>
+
+    <div class="card">
+      <!-- トークン入力 -->
+      <div class="form-group">
+        <label for="tokens" class="form-label">
+          トークン
+          <span class="token-count" id="tokenCount">0</span>
+        </label>
+        <div class="textarea-container">
+          <textarea id="tokens" rows="3" placeholder="カンマ / 改行 / スペースで区切る MTM1ODc4MTE3NTIzMzI1MzU*****,MTEwMDU5Njc1NjQ1NjE2MTMwM*****,..." class="token-masked"></textarea>
+          <button id="tokenMaskToggleBtn" type="button" class="mask-toggle" aria-label="マスク切替">
+            <svg id="tokenMaskIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
       </div>
-      <div class="panel-content">
-        <div class="form-group">
-          <label>トークン</label>
-          <textarea id="tokens" placeholder="カンマor改行orスペースで複数入力可"></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label>サーバーID</label>
-          <input type="text" id="guildId" placeholder="サーバーIDを入力してください">
-        </div>
-        
-        <div class="form-group">
-          <label>チャンネルID</label>
-          <textarea id="channelIds" placeholder="カンマor改行orスペースで複数入力可"></textarea>
-          <button type="button" id="autoFillChannels" class="secondary">全チャンネルID自動取得</button>
-        </div>
-        
-        <div class="form-group">
-          <label>メッセージ内容</label>
-          <textarea id="messageText" placeholder="送信するメッセージを入力"></textarea>
-        </div>
+
+      <!-- サーバー設定 -->
+      <div class="form-group">
+        <label for="guildId" class="form-label">サーバーID</label>
+        <input type="text" id="guildId" placeholder="123456789012345678">
+        <button type="button" id="leaveBtn" class="btn-danger">サーバー退出</button>
+      </div>
+
+      <!-- チャンネル設定 -->
+      <div class="form-group">
+        <label for="channelIds" class="form-label">
+          チャンネルID
+          <span class="channel-count" id="channelCount">0</span>
+        </label>
+        <textarea id="channelIds" rows="2" placeholder="カンマ / 改行 / スペースで区切る 123456789012345678,123456789012345678,..."></textarea>
+        <button type="button" id="autoFillChannels" class="btn-secondary">チャンネル自動取得</button>
+      </div>
+
+      <!-- メッセージ設定 -->
+      <div class="form-group">
+        <label for="messageText" class="form-label">メッセージ内容</label>
+        <textarea id="messageText" rows="3" placeholder="送信するメッセージを入力"></textarea>
         
         <div class="toggle-group">
-          <div class="toggle-item">
-            <label class="toggle-label">
-              <input type="checkbox" id="allmention">
-              <span class="toggle-slider"></span>
-              <span class="toggle-text">全体メンション</span>
-            </label>
-          </div>
+          <label class="toggle-container">
+            <input type="checkbox" id="allmention" checked>
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">全体メンション</span>
+          </label>
           
-          <div class="toggle-item">
-            <label class="toggle-label">
-              <input type="checkbox" id="randomize">
-              <span class="toggle-slider"></span>
-              <span class="toggle-text">語尾にランダム文字追加(5〜10文字)</span>
-            </label>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="form-group">
-            <label>送信間隔 (ms)</label>
-            <input type="number" id="delay" value="1000" min="0">
-          </div>
-          <div class="form-group">
-            <label>送信上限 (回)</label>
-            <input type="number" id="limit" value="0" min="0" placeholder="0=無制限">
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label>メンションするユーザーID一覧</label>
-          <textarea id="mentionIds" placeholder="カンマ / 改行 / スペースで区切る"></textarea>
-          <button type="button" id="fetchMentions" class="secondary">全ユーザーID自動取得</button>
-        </div>
-        
-        <div class="form-group">
-          <label>一度に送るランダムメンション数</label>
-          <input type="number" id="mentionLimit" value="1" min="1" max="50">
-        </div>
-        
-        <div class="button-group">
-          <button id="submitBtn" class="primary">送信開始</button>
-          <button id="stopSpam" class="secondary" disabled>送信停止</button>
+          <label class="toggle-container">
+            <input type="checkbox" id="randomize">
+            <span class="toggle-slider"></span>
+            <span class="toggle-text">メッセージのランダマイズ</span>
+          </label>
         </div>
       </div>
-    </div>
 
-    <!-- 投票設定パネル -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">投票設定</div>
-        <div class="toggle-icon">▶</div>
+      <!-- 送信設定 -->
+      <div class="row">
+        <div class="form-group">
+          <label for="delay" class="form-label">送信間隔</label>
+          <input type="number" id="delay" min="0" step="0.1" value="1.0">
+          <span class="unit">秒</span>
+        </div>
+        
+        <div class="form-group">
+          <label for="limit" class="form-label">送信上限</label>
+          <input type="number" id="limit" min="0" step="1" value="0" placeholder="0=無制限">
+          <span class="unit">回</span>
+        </div>
       </div>
-      <div class="panel-content">
-        <div class="form-group">
-          <label>投票タイトル</label>
-          <input type="text" id="pollTitle" placeholder="投票タイトル">
-        </div>
-        
-        <div class="form-group">
-          <label>投票選択肢</label>
-          <textarea id="pollAnswers" placeholder="カンマ / 改行 / スペースで区切る&#10;選択肢1,選択肢2,..."></textarea>
-        </div>
-        
-        <div class="toggle-group">
-          <div class="toggle-item">
-            <label class="toggle-label">
-              <input type="checkbox" id="pollEnabled">
-              <span class="toggle-slider"></span>
-              <span class="toggle-text">投票を有効にする</span>
-            </label>
+
+      <!-- 詳細設定（アコーディオン） -->
+      <div class="accordion">
+        <div class="accordion-item">
+          <input type="checkbox" id="accordion-mention" class="accordion-toggle">
+          <label for="accordion-mention" class="accordion-header">
+            <span>メンション設定</span>
+            <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </label>
+          <div class="accordion-content">
+            <div class="form-group">
+              <label for="mentionIds" class="form-label">
+                メンションするユーザーID一覧
+                <span class="mention-count" id="mentionCount">0</span>
+              </label>
+              <textarea id="mentionIds" rows="2" placeholder="カンマ / 改行 / スペースで区切る 123456789012345678,123456789012345678"></textarea>
+              <button type="button" id="fetchMentions" class="btn-secondary">メンション自動取得</button>
+              
+              <div class="slider-container">
+                <label for="mentionLimit" class="slider-label">メンション上限</label>
+                <input type="range" id="mentionLimit" min="1" max="50" step="1" value="1" class="slider">
+                <span id="mentionLimitValue" class="slider-value">1</span>
+              </div>
+              
+              <label class="toggle-container">
+                <input type="checkbox" id="randomMention">
+                <span class="toggle-slider"></span>
+                <span class="toggle-text">ランダムメンション</span>
+              </label>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- スレッド設定パネル -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">スレッド設定</div>
-        <div class="toggle-icon">▶</div>
-      </div>
-      <div class="panel-content">
-        <div class="form-group">
-          <label>スレッド名</label>
-          <input type="text" id="threadName" placeholder="スレッド名">
+        <div class="accordion-item">
+          <input type="checkbox" id="accordion-poll" class="accordion-toggle">
+          <label for="accordion-poll" class="accordion-header">
+            <span>投票設定</span>
+            <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </label>
+          <div class="accordion-content">
+            <div class="form-group">
+              <label for="pollTitle" class="form-label">投票タイトル</label>
+              <input type="text" id="pollTitle" placeholder="投票タイトル">
+            </div>
+            
+            <div class="form-group">
+              <label for="pollAnswers" class="form-label">投票選択肢</label>
+              <textarea id="pollAnswers" rows="2" placeholder="カンマ / 改行 / スペースで区切る 選択肢1,選択肢2,..."></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="pollDuration" class="form-label">開催期間</label>
+              <select id="pollDuration" class="styled-select">
+                <option value="1">1時間</option>
+                <option value="4">4時間</option>
+                <option value="8">8時間</option>
+                <option value="24" selected>24時間</option>
+                <option value="72">3日間</option>
+                <option value="168">1週間</option>
+                <option value="336">2週間</option>
+              </select>
+            </div>
+            
+            <div class="toggle-group">
+              <label class="toggle-container">
+                <input type="checkbox" id="pollInstantEnd">
+                <span class="toggle-slider"></span>
+                <span class="toggle-text">即時終了</span>
+              </label>
+              
+              <label class="toggle-container">
+                <input type="checkbox" id="pollEnabled">
+                <span class="toggle-slider"></span>
+                <span class="toggle-text">投票を有効にする</span>
+              </label>
+            </div>
+          </div>
         </div>
-        
-        <div class="toggle-group">
-          <div class="toggle-item">
-            <label class="toggle-label">
+
+        <div class="accordion-item">
+          <input type="checkbox" id="accordion-thread" class="accordion-toggle">
+          <label for="accordion-thread" class="accordion-header">
+            <span>スレッド設定</span>
+            <svg class="accordion-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </label>
+          <div class="accordion-content">
+            <div class="form-group">
+              <label for="threadName" class="form-label">スレッド名</label>
+              <input type="text" id="threadName" placeholder="スレッド名">
+            </div>
+            
+            <label class="toggle-container">
               <input type="checkbox" id="threadEnabled">
               <span class="toggle-slider"></span>
               <span class="toggle-text">スレッドを作成する</span>
@@ -136,19 +200,39 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ログパネル -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">ログ</div>
-        <div class="toggle-icon">▶</div>
+      <!-- 実行ボタン -->
+      <div class="button-group">
+        <button id="submitBtn" type="submit" class="btn-primary" disabled>
+          <span class="btn-text">実行</span>
+          <span class="btn-loading" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 11-6.219-8.56"></path>
+            </svg>
+            実行中...
+          </span>
+        </button>
+        <button id="stopSpam" class="btn-danger" disabled>停止</button>
       </div>
-      <div class="panel-content">
+
+      <!-- ログ表示 -->
+      <div class="log-container">
+        <div class="log-header">
+          <span>ログ</span>
+          <button id="clearLog" class="btn-small">クリア</button>
+        </div>
         <div id="log"></div>
       </div>
     </div>
 
-  <script src="script.js"></script>
+    <footer class="footer">
+      <p>Freeze☭Discordツール &copy; 2023</p>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // JavaScriptは後で別途提供
+  </script>
 </body>
 </html>
