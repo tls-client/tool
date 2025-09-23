@@ -1,65 +1,402 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Discord 荒らしツール</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>discord 荒らしツール</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0a0a0a;
+      color: #00ff88;
+      padding: 10px;
+      line-height: 1.4;
+    }
+    .container { max-width: 100%; }
+    .panel {
+      background: #111;
+      border: 1px solid #0066ff;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .panel-title { font-weight: 600; }
+    .toggle-icon { transition: transform 0.3s; }
+    .panel.open .toggle-icon { transform: rotate(90deg); }
+    .panel-content { display: none; margin-top: 10px; }
+    .panel.open .panel-content { display: block; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 4px; font-size: 14px; color: #00ccff; }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #0066ff;
+      border-radius: 4px;
+      background: #000;
+      color: #fff;
+      font-size: 14px;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    .row { display: flex; gap: 10px; }
+    .row > * { flex: 1; }
+    button {
+      background: #0066ff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.secondary { background: #0088ff; margin-top: 5px; }
+    .checkbox { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+    .checkbox input { width: auto; }
+    #log {
+      background: #000;
+      border: 1px solid #0066ff;
+      border-radius: 4px;
+      padding: 10px;
+      height: 120px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    @media (min-width: 768px) {
+      body { padding: 20px; }
+      .container { max-width: 600px; margin: 0 auto; }
+      .panel { padding: 15px; }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h2 style="text-align:center;margin-bottom:15px;color:#00ff88">Freeze☭レイドツール</h2>
+    
+    <!-- 基本設定パネル -->
+    <div class="panel open">
+      <div class="panel-header">
+        <div class="panel-title">基本設定</div>
+        <div class="toggle-icon">▶</div>
+      </div>
+      <div class="panel-content">
+        <div class="form-group">
+          <label>トークン</label>
+          <textarea id="tokens" placeholder="改行で複数入力"></textarea>
+        </div>
+        <div class="form-group">
+          <label>サーバーID</label>
+          <input type="text" id="guildId" placeholder="123456789012345678">
+        </div>
+        <div class="form-group">
+          <label>チャンネルID</label>
+          <textarea id="channelIds" placeholder="改行で複数入力"></textarea>
+          <button type="button" id="autoFillChannels" class="secondary">チャンネル自動取得</button>
+        </div>
+      </div>
+    </div>
 
-<div class="container">
+    <!-- メッセージ設定パネル -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">メッセージ設定</div>
+        <div class="toggle-icon">▶</div>
+      </div>
+      <div class="panel-content">
+        <div class="form-group">
+          <label>メッセージ内容</label>
+          <textarea id="messageText" placeholder="送信するメッセージ"></textarea>
+        </div>
+        <div class="checkbox">
+          <input type="checkbox" id="allmention" checked>
+          <label for="allmention" style="display:inline;margin:0">全体メンション</label>
+        </div>
+        <div class="checkbox">
+          <input type="checkbox" id="randomize">
+          <label for="randomize" style="display:inline;margin:0">語尾にランダム文字追加</label>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>送信間隔 (ms)</label>
+            <input type="number" id="delay" value="1000" min="0">
+          </div>
+          <div class="form-group">
+            <label>送信上限</label>
+            <input type="number" id="limit" value="0" min="0" placeholder="0=無制限">
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <!-- メッセージ設定パネル -->
-  <div class="panel">
-    <button class="accordion-btn">メッセージ設定</button>
-    <div class="panel-content">
-      <textarea id="token" placeholder="Token (改行で複数可)"></textarea>
-      <textarea id="guild" placeholder="Guild ID (改行で複数可)"></textarea>
-      <textarea id="channel" placeholder="Channel ID (改行で複数可)"></textarea>
-      <button id="fetch-channels">全チャンネルID自動取得</button>
-      <textarea id="message" placeholder="メッセージ内容"></textarea>
-      <input type="number" id="mention-count" placeholder="ランダムメンション数">
-      <button id="fetch-users">全ユーザーID自動取得</button>
-      <textarea id="fetched-users" placeholder="取得済みユーザーID一覧"></textarea>
-      <label><input type="checkbox" id="suffix-random"> 語尾にランダム文字を付与</label>
-      <input type="number" id="interval" placeholder="送信間隔(ms)">
-      <input type="number" id="limit" placeholder="送信上限(回)">
-      <button id="start-send">送信開始</button>
-      <button id="stop-send">送信停止</button>
+    <!-- メンション設定パネル -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">メンション設定</div>
+        <div class="toggle-icon">▶</div>
+      </div>
+      <div class="panel-content">
+        <div class="form-group">
+          <label>メンションするユーザーID</label>
+          <textarea id="mentionIds" placeholder="改行で複数入力"></textarea>
+          <button type="button" id="fetchMentions" class="secondary">ユーザー自動取得</button>
+        </div>
+        <div class="form-group">
+          <label>ランダムメンション数</label>
+          <input type="number" id="mentionLimit" value="1" min="1" max="50">
+        </div>
+        <div class="checkbox">
+          <input type="checkbox" id="randomMention">
+          <label for="randomMention" style="display:inline;margin:0">ランダムメンション有効</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作パネル -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">操作</div>
+        <div class="toggle-icon">▶</div>
+      </div>
+      <div class="panel-content">
+        <button id="submitBtn">送信開始</button>
+        <button id="stopSpam" class="secondary" disabled>送信停止</button>
+        <button id="leaveBtn" class="secondary">サーバー退出</button>
+      </div>
+    </div>
+
+    <!-- ログパネル -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">ログ</div>
+        <div class="toggle-icon">▶</div>
+      </div>
+      <div class="panel-content">
+        <div id="log"></div>
+      </div>
     </div>
   </div>
 
-  <!-- 投票設定パネル -->
-  <div class="panel">
-    <button class="accordion-btn">投票設定</button>
-    <div class="panel-content">
-      <textarea id="vote-options" placeholder="投票項目を改行で入力"></textarea>
-      <button id="start-vote">投票開始</button>
-      <button id="stop-vote">投票停止</button>
-    </div>
-  </div>
+  <script>
+    // パネル開閉機能
+    document.querySelectorAll('.panel-header').forEach(header => {
+      header.addEventListener('click', () => {
+        header.parentElement.classList.toggle('open');
+      });
+    });
 
-  <!-- スレッド設定パネル -->
-  <div class="panel">
-    <button class="accordion-btn">スレッド設定</button>
-    <div class="panel-content">
-      <textarea id="thread-title" placeholder="スレッドタイトル"></textarea>
-      <textarea id="thread-content" placeholder="スレッド内容"></textarea>
-      <button id="create-thread">スレッド作成</button>
-    </div>
-  </div>
+    // ユーティリティ関数
+    function parseIds(str) {
+      return str.split('\n').map(s => s.trim()).filter(Boolean);
+    }
 
-  <!-- ログパネル -->
-  <div class="panel">
-    <button class="accordion-btn">詳細ログ</button>
-    <div class="panel-content">
-      <textarea id="log" placeholder="送信・取得・エラー等の詳細ログ"></textarea>
-    </div>
-  </div>
+    function log(msg, isError = false) {
+      const logDiv = document.getElementById('log');
+      const el = document.createElement('div');
+      el.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      el.style.color = isError ? '#ff4444' : '#00ff88';
+      logDiv.appendChild(el);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
 
-</div>
+    // 自動取得機能
+    document.getElementById('autoFillChannels').addEventListener('click', async function() {
+      const tokens = parseIds(document.getElementById('tokens').value);
+      const guildId = document.getElementById('guildId').value.trim();
+      
+      if (!tokens.length || !guildId) {
+        log('トークンとサーバーIDを入力してください', true);
+        return;
+      }
 
-<script src="script.js"></script>
+      for (const token of tokens) {
+        try {
+          const response = await fetch(`https://discord.com/api/v9/guilds/${guildId}/channels`, {
+            headers: { Authorization: token }
+          });
+          
+          if (response.ok) {
+            const channels = await response.json();
+            const textChannelIds = channels
+              .filter(ch => [0, 2, 5].includes(ch.type))
+              .map(ch => ch.id);
+            
+            document.getElementById('channelIds').value = textChannelIds.join('\n');
+            log(`チャンネルIDを ${textChannelIds.length}件 取得しました`);
+            return;
+          }
+        } catch (error) {
+          continue;
+        }
+      }
+      log('チャンネル取得に失敗しました', true);
+    });
+
+    document.getElementById('fetchMentions').addEventListener('click', async function() {
+      const tokens = parseIds(document.getElementById('tokens').value);
+      const channelIds = parseIds(document.getElementById('channelIds').value);
+      
+      if (!tokens.length || !channelIds.length) {
+        log('トークンとチャンネルIDを入力してください', true);
+        return;
+      }
+
+      const userSet = new Set();
+      
+      for (const channelId of channelIds.slice(0, 3)) { // 最大3チャンネルまで
+        try {
+          const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=50`, {
+            headers: { Authorization: tokens[0] }
+          });
+          
+          if (response.ok) {
+            const messages = await response.json();
+            messages.forEach(msg => {
+              if (msg.author && msg.author.id) {
+                userSet.add(msg.author.id);
+              }
+            });
+          }
+        } catch (error) {
+          // エラーは無視
+        }
+      }
+      
+      const userIds = Array.from(userSet);
+      document.getElementById('mentionIds').value = userIds.join('\n');
+      log(`ユーザーIDを ${userIds.length}件 取得しました`);
+    });
+
+    // 送信機能
+    let isRunning = false;
+    let abortController = new AbortController();
+
+    document.getElementById('submitBtn').addEventListener('click', async function() {
+      if (isRunning) return;
+      
+      const tokens = parseIds(document.getElementById('tokens').value);
+      const channelIds = parseIds(document.getElementById('channelIds').value);
+      const messageText = document.getElementById('messageText').value.trim();
+      
+      if (!tokens.length || !channelIds.length || !messageText) {
+        log('必須項目を入力してください', true);
+        return;
+      }
+
+      isRunning = true;
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('stopSpam').disabled = false;
+      abortController = new AbortController();
+      
+      const delay = parseInt(document.getElementById('delay').value) || 1000;
+      const limit = parseInt(document.getElementById('limit').value) || 0;
+      const allmention = document.getElementById('allmention').checked;
+      const randomize = document.getElementById('randomize').checked;
+      const mentionIds = parseIds(document.getElementById('mentionIds').value);
+      const mentionLimit = parseInt(document.getElementById('mentionLimit').value) || 1;
+      const randomMention = document.getElementById('randomMention').checked;
+
+      let count = 0;
+      
+      while (!abortController.signal.aborted && (limit === 0 || count < limit)) {
+        for (const channelId of channelIds) {
+          if (abortController.signal.aborted) break;
+          
+          let content = messageText;
+          
+          // メンション処理
+          if (allmention) content += ' @everyone';
+          if (randomMention && mentionIds.length > 0) {
+            const shuffled = [...mentionIds].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, Math.min(mentionLimit, shuffled.length));
+            content += ' ' + selected.map(id => `<@${id}>`).join(' ');
+          }
+          
+          // ランダム文字追加
+          if (randomize) {
+            const randomChars = Math.random().toString(36).substring(2, 8);
+            content += ' ' + randomChars;
+          }
+
+          try {
+            const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
+              method: 'POST',
+              headers: {
+                'Authorization': tokens[count % tokens.length],
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ content }),
+              signal: abortController.signal
+            });
+
+            if (response.ok) {
+              log(`送信成功: ${channelId}`);
+              count++;
+            } else if (response.status === 429) {
+              const data = await response.json();
+              const waitTime = data.retry_after * 1000;
+              log(`レートリミット: ${waitTime}ms待機`, true);
+              await new Promise(r => setTimeout(r, waitTime));
+            } else {
+              log(`送信失敗: ${response.status}`, true);
+            }
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              log(`エラー: ${error.message}`, true);
+            }
+            break;
+          }
+
+          if (abortController.signal.aborted) break;
+          if (limit > 0 && count >= limit) break;
+          
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
+
+      isRunning = false;
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('stopSpam').disabled = true;
+      log('送信を停止しました');
+    });
+
+    document.getElementById('stopSpam').addEventListener('click', function() {
+      if (isRunning) {
+        abortController.abort();
+        log('停止信号を送信しました');
+      }
+    });
+
+    document.getElementById('leaveBtn').addEventListener('click', async function() {
+      const tokens = parseIds(document.getElementById('tokens').value);
+      const guildId = document.getElementById('guildId').value.trim();
+      
+      if (!tokens.length || !guildId) {
+        log('トークンとサーバーIDを入力してください', true);
+        return;
+      }
+
+      for (const token of tokens) {
+        try {
+          await fetch(`https://discord.com/api/v9/users/@me/guilds/${guildId}`, {
+            method: 'DELETE',
+            headers: { Authorization: token }
+          });
+        } catch (error) {
+          // エラーは無視
+        }
+      }
+      
+      log('サーバー退出リクエストを送信しました');
+    });
+  </script>
 </body>
 </html>
