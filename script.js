@@ -1,3 +1,10 @@
+// ページ読み込み時にすべてのパネルを閉じる
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.panel').forEach(panel => {
+    panel.classList.remove('open');
+  });
+});
+
 // パネル開閉機能
 document.querySelectorAll('.panel-header').forEach(header => {
   header.addEventListener('click', () => {
@@ -7,14 +14,14 @@ document.querySelectorAll('.panel-header').forEach(header => {
 
 // ユーティリティ関数
 function parseIds(str) {
-  return str.split('\n').map(s => s.trim()).filter(Boolean);
+  return str.split(/[\s,]+/).map(s => s.trim()).filter(Boolean);
 }
 
 function log(msg, isError = false) {
   const logDiv = document.getElementById('log');
   const el = document.createElement('div');
   el.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-  el.style.color = isError ? '#ed4245' : '#b9bbbe';
+  el.style.color = isError ? '#ff4444' : '#0f0';
   logDiv.appendChild(el);
   logDiv.scrollTop = logDiv.scrollHeight;
 }
@@ -63,7 +70,7 @@ document.getElementById('fetchMentions').addEventListener('click', async functio
 
   const userSet = new Set();
   
-  for (const channelId of channelIds.slice(0, 3)) { // 最大3チャンネルまで
+  for (const channelId of channelIds.slice(0, 3)) {
     try {
       const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=50`, {
         headers: { Authorization: tokens[0] }
@@ -114,7 +121,6 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
   const randomize = document.getElementById('randomize').checked;
   const mentionIds = parseIds(document.getElementById('mentionIds').value);
   const mentionLimit = parseInt(document.getElementById('mentionLimit').value) || 1;
-  const randomMention = document.getElementById('randomMention').checked;
 
   let count = 0;
   
@@ -126,7 +132,7 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
       
       // メンション処理
       if (allmention) content += ' @everyone';
-      if (randomMention && mentionIds.length > 0) {
+      if (mentionIds.length > 0) {
         const shuffled = [...mentionIds].sort(() => 0.5 - Math.random());
         const selected = shuffled.slice(0, Math.min(mentionLimit, shuffled.length));
         content += ' ' + selected.map(id => `<@${id}>`).join(' ');
@@ -134,7 +140,8 @@ document.getElementById('submitBtn').addEventListener('click', async function() 
       
       // ランダム文字追加
       if (randomize) {
-        const randomChars = Math.random().toString(36).substring(2, 8);
+        const randomLength = Math.floor(Math.random() * 6) + 5; // 5-10文字
+        const randomChars = Math.random().toString(36).substring(2, 2 + randomLength);
         content += ' ' + randomChars;
       }
 
@@ -185,27 +192,4 @@ document.getElementById('stopSpam').addEventListener('click', function() {
     abortController.abort();
     log('停止信号を送信しました');
   }
-});
-
-document.getElementById('leaveBtn').addEventListener('click', async function() {
-  const tokens = parseIds(document.getElementById('tokens').value);
-  const guildId = document.getElementById('guildId').value.trim();
-  
-  if (!tokens.length || !guildId) {
-    log('トークンとサーバーIDを入力してください', true);
-    return;
-  }
-
-  for (const token of tokens) {
-    try {
-      await fetch(`https://discord.com/api/v9/users/@me/guilds/${guildId}`, {
-        method: 'DELETE',
-        headers: { Authorization: token }
-      });
-    } catch (error) {
-      // エラーは無視
-    }
-  }
-  
-  log('サーバー退出リクエストを送信しました');
 });
