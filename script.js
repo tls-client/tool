@@ -1,74 +1,211 @@
-// アコーディオン開閉処理
-document.querySelectorAll('.accordion-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const content = btn.nextElementSibling;
-    content.style.display = content.style.display === 'block' ? 'none' : 'block';
+// パネル開閉機能
+document.querySelectorAll('.panel-header').forEach(header => {
+  header.addEventListener('click', () => {
+    header.parentElement.classList.toggle('open');
   });
 });
 
-// 投票パネル
-document.getElementById('start-poll').addEventListener('click', () => {
-  const question = document.getElementById('poll-question').value;
-  const options = document.getElementById('poll-options').value.split('\n').filter(o => o);
-  const duration = parseInt(document.getElementById('poll-duration').value) || 60;
-
-  if (!question || options.length === 0) {
-    alert('質問と選択肢を入力してください');
-    return;
-  }
-
-  log(`投票開始: ${question} (${options.join(', ')}) 時間: ${duration}s`);
-  // 実際の投票処理はここに組み込み可能
-});
-
-document.getElementById('stop-poll').addEventListener('click', () => {
-  log('投票停止');
-});
-
-// スレッドパネル
-document.getElementById('create-thread').addEventListener('click', () => {
-  const threadName = document.getElementById('thread-name').value;
-  const channels = document.getElementById('thread-channel').value.split('\n').filter(c => c);
-
-  if (!threadName || channels.length === 0) {
-    alert('スレッド名とチャンネルIDを入力してください');
-    return;
-  }
-
-  log(`スレッド作成: ${threadName} チャンネル: ${channels.join(', ')}`);
-  // 実際のスレッド作成処理はここに組み込み可能
-});
-
-document.getElementById('delete-thread').addEventListener('click', () => {
-  const threadName = document.getElementById('thread-name').value;
-  if (!threadName) {
-    alert('削除するスレッド名を入力してください');
-    return;
-  }
-
-  log(`スレッド削除: ${threadName}`);
-  // 実際の削除処理はここに組み込み可能
-});
-
-// ログパネル
-function log(message) {
-  const logArea = document.getElementById('log-output');
-  const time = new Date().toLocaleTimeString();
-  logArea.value += `[${time}] ${message}\n`;
-  logArea.scrollTop = logArea.scrollHeight;
+// ユーティリティ関数
+function parseIds(str) {
+  return str.split('\n').map(s => s.trim()).filter(Boolean);
 }
 
-document.getElementById('clear-log').addEventListener('click', () => {
-  document.getElementById('log-output').value = '';
+function log(msg, isError = false) {
+  const logDiv = document.getElementById('log');
+  const el = document.createElement('div');
+  el.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  el.style.color = isError ? '#ed4245' : '#b9bbbe';
+  logDiv.appendChild(el);
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+// 自動取得機能
+document.getElementById('autoFillChannels').addEventListener('click', async function() {
+  const tokens = parseIds(document.getElementById('tokens').value);
+  const guildId = document.getElementById('guildId').value.trim();
+  
+  if (!tokens.length || !guildId) {
+    log('トークンとサーバーIDを入力してください', true);
+    return;
+  }
+
+  for (const token of tokens) {
+    try {
+      const response = await fetch(`https://discord.com/api/v9/guilds/${guildId}/channels`, {
+        headers: { Authorization: token }
+      });
+      
+      if (response.ok) {
+        const channels = await response.json();
+        const textChannelIds = channels
+          .filter(ch => [0, 2, 5].includes(ch.type))
+          .map(ch => ch.id);
+        
+        document.getElementById('channelIds').value = textChannelIds.join('\n');
+        log(`チャンネルIDを ${textChannelIds.length}件 取得しました`);
+        return;
+      }
+    } catch (error) {
+      continue;
+    }
+  }
+  log('チャンネル取得に失敗しました', true);
 });
 
-document.getElementById('export-log').addEventListener('click', () => {
-  const logText = document.getElementById('log-output').value;
-  const blob = new Blob([logText], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'log.txt';
-  a.click();
-  URL.revokeObjectURL(url);
+document.getElementById('fetchMentions').addEventListener('click', async function() {
+  const tokens = parseIds(document.getElementById('tokens').value);
+  const channelIds = parseIds(document.getElementById('channelIds').value);
+  
+  if (!tokens.length || !channelIds.length) {
+    log('トークンとチャンネルIDを入力してください', true);
+    return;
+  }
+
+  const userSet = new Set();
+  
+  for (const channelId of channelIds.slice(0, 3)) { // 最大3チャンネルまで
+    try {
+      const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages?limit=50`, {
+        headers: { Authorization: tokens[0] }
+      });
+      
+      if (response.ok) {
+        const messages = await response.json();
+        messages.forEach(msg => {
+          if (msg.author && msg.author.id) {
+            userSet.add(msg.author.id);
+          }
+        });
+      }
+    } catch (error) {
+      // エラーは無視
+    }
+  }
+  
+  const userIds = Array.from(userSet);
+  document.getElementById('mentionIds').value = userIds.join('\n');
+  log(`ユーザーIDを ${userIds.length}件 取得しました`);
+});
+
+// 送信機能
+let isRunning = false;
+let abortController = new AbortController();
+
+document.getElementById('submitBtn').addEventListener('click', async function() {
+  if (isRunning) return;
+  
+  const tokens = parseIds(document.getElementById('tokens').value);
+  const channelIds = parseIds(document.getElementById('channelIds').value);
+  const messageText = document.getElementById('messageText').value.trim();
+  
+  if (!tokens.length || !channelIds.length || !messageText) {
+    log('必須項目を入力してください', true);
+    return;
+  }
+
+  isRunning = true;
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('stopSpam').disabled = false;
+  abortController = new AbortController();
+  
+  const delay = parseInt(document.getElementById('delay').value) || 1000;
+  const limit = parseInt(document.getElementById('limit').value) || 0;
+  const allmention = document.getElementById('allmention').checked;
+  const randomize = document.getElementById('randomize').checked;
+  const mentionIds = parseIds(document.getElementById('mentionIds').value);
+  const mentionLimit = parseInt(document.getElementById('mentionLimit').value) || 1;
+  const randomMention = document.getElementById('randomMention').checked;
+
+  let count = 0;
+  
+  while (!abortController.signal.aborted && (limit === 0 || count < limit)) {
+    for (const channelId of channelIds) {
+      if (abortController.signal.aborted) break;
+      
+      let content = messageText;
+      
+      // メンション処理
+      if (allmention) content += ' @everyone';
+      if (randomMention && mentionIds.length > 0) {
+        const shuffled = [...mentionIds].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, Math.min(mentionLimit, shuffled.length));
+        content += ' ' + selected.map(id => `<@${id}>`).join(' ');
+      }
+      
+      // ランダム文字追加
+      if (randomize) {
+        const randomChars = Math.random().toString(36).substring(2, 8);
+        content += ' ' + randomChars;
+      }
+
+      try {
+        const response = await fetch(`https://discord.com/api/v10/channels/${channelId}/messages`, {
+          method: 'POST',
+          headers: {
+            'Authorization': tokens[count % tokens.length],
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ content }),
+          signal: abortController.signal
+        });
+
+        if (response.ok) {
+          log(`送信成功: ${channelId}`);
+          count++;
+        } else if (response.status === 429) {
+          const data = await response.json();
+          const waitTime = data.retry_after * 1000;
+          log(`レートリミット: ${waitTime}ms待機`, true);
+          await new Promise(r => setTimeout(r, waitTime));
+        } else {
+          log(`送信失敗: ${response.status}`, true);
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          log(`エラー: ${error.message}`, true);
+        }
+        break;
+      }
+
+      if (abortController.signal.aborted) break;
+      if (limit > 0 && count >= limit) break;
+      
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+
+  isRunning = false;
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('stopSpam').disabled = true;
+  log('送信を停止しました');
+});
+
+document.getElementById('stopSpam').addEventListener('click', function() {
+  if (isRunning) {
+    abortController.abort();
+    log('停止信号を送信しました');
+  }
+});
+
+document.getElementById('leaveBtn').addEventListener('click', async function() {
+  const tokens = parseIds(document.getElementById('tokens').value);
+  const guildId = document.getElementById('guildId').value.trim();
+  
+  if (!tokens.length || !guildId) {
+    log('トークンとサーバーIDを入力してください', true);
+    return;
+  }
+
+  for (const token of tokens) {
+    try {
+      await fetch(`https://discord.com/api/v9/users/@me/guilds/${guildId}`, {
+        method: 'DELETE',
+        headers: { Authorization: token }
+      });
+    } catch (error) {
+      // エラーは無視
+    }
+  }
+  
+  log('サーバー退出リクエストを送信しました');
 });
