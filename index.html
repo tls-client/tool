@@ -10,29 +10,6 @@
   <div class="container">
     <h2>discord 荒らしツール</h2>
     
-    <!-- 基本設定パネル -->
-    <div class="panel open">
-      <div class="panel-header">
-        <div class="panel-title">基本設定</div>
-        <div class="toggle-icon">▶</div>
-      </div>
-      <div class="panel-content">
-        <div class="form-group">
-          <label>トークン</label>
-          <textarea id="tokens" placeholder="改行で複数入力"></textarea>
-        </div>
-        <div class="form-group">
-          <label>サーバーID</label>
-          <input type="text" id="guildId" placeholder="123456789012345678">
-        </div>
-        <div class="form-group">
-          <label>チャンネルID</label>
-          <textarea id="channelIds" placeholder="改行で複数入力"></textarea>
-          <button type="button" id="autoFillChannels" class="secondary">チャンネル自動取得</button>
-        </div>
-      </div>
-    </div>
-
     <!-- メッセージ設定パネル -->
     <div class="panel">
       <div class="panel-header">
@@ -41,63 +18,123 @@
       </div>
       <div class="panel-content">
         <div class="form-group">
+          <label>トークン</label>
+          <textarea id="tokens" placeholder="カンマor改行orスペースで複数入力可"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>サーバーID</label>
+          <input type="text" id="guildId" placeholder="サーバーIDを入力してください">
+        </div>
+        
+        <div class="form-group">
+          <label>チャンネルID</label>
+          <textarea id="channelIds" placeholder="カンマor改行orスペースで複数入力可"></textarea>
+          <button type="button" id="autoFillChannels" class="secondary">全チャンネルID自動取得</button>
+        </div>
+        
+        <div class="form-group">
           <label>メッセージ内容</label>
-          <textarea id="messageText" placeholder="送信するメッセージ"></textarea>
+          <textarea id="messageText" placeholder="送信するメッセージを入力"></textarea>
         </div>
-        <div class="checkbox">
-          <input type="checkbox" id="allmention" checked>
-          <label for="allmention">全体メンション</label>
+        
+        <div class="toggle-group">
+          <div class="toggle-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="allmention">
+              <span class="toggle-slider"></span>
+              <span class="toggle-text">全体メンション</span>
+            </label>
+          </div>
+          
+          <div class="toggle-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="randomize">
+              <span class="toggle-slider"></span>
+              <span class="toggle-text">語尾にランダム文字追加(5〜10文字)</span>
+            </label>
+          </div>
         </div>
-        <div class="checkbox">
-          <input type="checkbox" id="randomize">
-          <label for="randomize">語尾にランダム文字追加</label>
-        </div>
+        
         <div class="row">
           <div class="form-group">
             <label>送信間隔 (ms)</label>
             <input type="number" id="delay" value="1000" min="0">
           </div>
           <div class="form-group">
-            <label>送信上限</label>
+            <label>送信上限 (回)</label>
             <input type="number" id="limit" value="0" min="0" placeholder="0=無制限">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>メンションするユーザーID一覧</label>
+          <textarea id="mentionIds" placeholder="カンマ / 改行 / スペースで区切る"></textarea>
+          <button type="button" id="fetchMentions" class="secondary">全ユーザーID自動取得</button>
+        </div>
+        
+        <div class="form-group">
+          <label>一度に送るランダムメンション数</label>
+          <input type="number" id="mentionLimit" value="1" min="1" max="50">
+        </div>
+        
+        <div class="button-group">
+          <button id="submitBtn" class="primary">送信開始</button>
+          <button id="stopSpam" class="secondary" disabled>送信停止</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 投票設定パネル -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">投票設定</div>
+        <div class="toggle-icon">▶</div>
+      </div>
+      <div class="panel-content">
+        <div class="form-group">
+          <label>投票タイトル</label>
+          <input type="text" id="pollTitle" placeholder="投票タイトル">
+        </div>
+        
+        <div class="form-group">
+          <label>投票選択肢</label>
+          <textarea id="pollAnswers" placeholder="カンマ / 改行 / スペースで区切る&#10;選択肢1,選択肢2,..."></textarea>
+        </div>
+        
+        <div class="toggle-group">
+          <div class="toggle-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="pollEnabled">
+              <span class="toggle-slider"></span>
+              <span class="toggle-text">投票を有効にする</span>
+            </label>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- メンション設定パネル -->
+    <!-- スレッド設定パネル -->
     <div class="panel">
       <div class="panel-header">
-        <div class="panel-title">メンション設定</div>
+        <div class="panel-title">スレッド設定</div>
         <div class="toggle-icon">▶</div>
       </div>
       <div class="panel-content">
         <div class="form-group">
-          <label>メンションするユーザーID</label>
-          <textarea id="mentionIds" placeholder="改行で複数入力"></textarea>
-          <button type="button" id="fetchMentions" class="secondary">ユーザー自動取得</button>
+          <label>スレッド名</label>
+          <input type="text" id="threadName" placeholder="スレッド名">
         </div>
-        <div class="form-group">
-          <label>ランダムメンション数</label>
-          <input type="number" id="mentionLimit" value="1" min="1" max="50">
+        
+        <div class="toggle-group">
+          <div class="toggle-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="threadEnabled">
+              <span class="toggle-slider"></span>
+              <span class="toggle-text">スレッドを作成する</span>
+            </label>
+          </div>
         </div>
-        <div class="checkbox">
-          <input type="checkbox" id="randomMention">
-          <label for="randomMention">ランダムメンション有効</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- 操作パネル -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">操作</div>
-        <div class="toggle-icon">▶</div>
-      </div>
-      <div class="panel-content">
-        <button id="submitBtn" class="primary">送信開始</button>
-        <button id="stopSpam" class="secondary" disabled>送信停止</button>
-        <button id="leaveBtn" class="secondary">サーバー退出</button>
       </div>
     </div>
 
@@ -110,6 +147,10 @@
       <div class="panel-content">
         <div id="log"></div>
       </div>
+    </div>
+    
+    <div class="footer">
+      <p>freeze-axis.github.io/raider</p>
     </div>
   </div>
 
